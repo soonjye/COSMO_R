@@ -5,6 +5,7 @@ COSMO (COrrection of Sample Mislabeling by Omics) is an R package in detecting a
 
 
 ## Table of contents
+* [Using Integrated COSMO](#integrated_cosmo)
 * [Input Requirement](#input_requirement)
 * [Preprocessing](#preprocessing)
   * [Chromosome annotation](#chr_annotation)
@@ -16,9 +17,28 @@ COSMO (COrrection of Sample Mislabeling by Omics) is an R package in detecting a
 * [Label Correction](#label_correction)
   * [Generate table with corrected label](#corrected_table)
   * [Visualize mislabeled samples](#visualize_error)
-* [Using Integrated COSMO](#integrated_cosmo)
 * [Citing COSMO](#cosmo_cite)
 
+
+# <a name="integrated_cosmo"></a>Using Integrated COSMO
+Call the function `run_COSMOR` to automatically run the entire pipeline and generate outputs in default directory: `intermediate_result` and `error_sample`.
+```
+Usage: run_COSMOR(rna_datafile, pro_datafile, cli_datafile, impute_missing = F, cor_cutoff = 0.5)
+Arguments:
+  - rna_datafile: tab-delimited files of RNA data matrix. Rows represent genes while columns represent samples
+  - pro_datafile: tab-delimited files of PRO data matrix. Rows represent genes while columns represent samples
+  - cli_datafile: data files containing clinical information. Must contain column 'sample' for sample labels and 'gender' for sex
+  - impute_missing: logical values. If TRUE, missing values will be imputed using Random-Forest based imputation method. FALSE by default.
+  - cor_cutoff: cutoff used to extract highly correlated genes (Pearson correlation > cuttoff). By default is 0.5.
+
+Example:
+> rna_raw_file <- 'Example_data/rna.tsv'
+> pro_raw_file <- 'Example_data/pro.tsv'
+> cli_input_file <- 'Example_data/cli.tsv'
+> run_COSMOR(rna_raw_file, pro_raw_file, cli_input_file, impute_missing = F, cor_cutoff=0.5)
+```
+
+Though an integrated function provides convenience for user to run COSMO with one command, step-by-step manual provides flexibility for user configuration. Step-by-step manual could be found from next section onwards.
 
 # <a name="input_requirement"></a>Input Requirement
 Three types of data are requirement for performing COSMO: RNAseq data, Proteomics data and Clinical data. Example inputs of RNAseq and Proteomics data matrix are shown below. The rows represent genes while columns represent samples.
@@ -416,24 +436,6 @@ Assuming sex prediction is not feasible and unable to determine the swapping pai
 <img align="center" src="figs/mismatch_34.png">
 <img align="center" src="figs/mismatch_45.png">
 
-
-# <a name="integrated_cosmo"></a>Using Integrated COSMO
-Though step-by-step manual provides flexibility for user configuration, an integrated function provides convenience for user to run COSMO with one command. Call the function `run_COSMOR` to automatically run the entire pipeline and generate outputs in default directory: `intermediate_result` and `error_sample`.
-```
-Usage: run_COSMOR(rna_datafile, pro_datafile, cli_datafile, impute_missing = F, cor_cutoff = 0.5)
-Arguments:
-  - rna_datafile: tab-delimited files of RNA data matrix. Rows represent genes while columns represent samples
-  - pro_datafile: tab-delimited files of PRO data matrix. Rows represent genes while columns represent samples
-  - cli_datafile: data files containing clinical information. Must contain column 'sample' for sample labels and 'gender' for sex
-  - impute_missing: logical values. If TRUE, missing values will be imputed using Random-Forest based imputation method. FALSE by default.
-  - cor_cutoff: cutoff used to extract highly correlated genes (Pearson correlation > cuttoff). By default is 0.5.
-
-Example:
-> rna_raw_file <- 'Example_data/rna.tsv'
-> pro_raw_file <- 'Example_data/pro.tsv'
-> cli_input_file <- 'Example_data/cli.tsv'
-> run_COSMOR(rna_raw_file, pro_raw_file, cli_input_file, impute_missing = F, cor_cutoff=0.5)
-```
 
 
 # <a name="cosmo_cite"></a>Citing COSMO
