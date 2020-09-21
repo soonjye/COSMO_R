@@ -42,11 +42,11 @@ prpc_omics <- function(omics, chr_annotate, impute_missing = FALSE) {
   cat('    Autosomal gene =', nrow(omics_atsm), '\n')
   
   rowmiss <- apply(omics_atsm, 1, function(x) sum(is.na(x)))
-  cat(sprintf('      %d autosomal genes with missing value in > 50%% (%d) of samples >> Removed... \n', sum(rowmiss > ncol(omics_atsm)/2), ncol(omics_atsm)/2))
+  cat(sprintf('      %d autosomal genes with missing value in > 50%% (%.1f) of samples >> Removed... \n', sum(rowmiss > ncol(omics_atsm)/2), ncol(omics_atsm)/2))
   omics_atsm <- omics_atsm[rowmiss <= ncol(omics_atsm)/2, ]
   
   rowmiss <- apply(omics_atsm, 1, function(x) sum(is.na(x)))
-  cat(sprintf('      %d autosomal genes with missing value in <= 50%% (%d) of samples >> ', sum(rowmiss <= ncol(omics_atsm)/2 & rowmiss > 0), ncol(omics_atsm)/2))
+  cat(sprintf('      %d autosomal genes with missing value in <= 50%% (%.1f) of samples >> ', sum(rowmiss <= ncol(omics_atsm)/2 & rowmiss > 0), ncol(omics_atsm)/2))
   
   #### For remaining autosomal genes, if impute_missing == TRUE, then impute missing values
   if (impute_missing == TRUE) {
@@ -200,7 +200,7 @@ align_omics <- function(rnaseq, proteome, cutoff = 0.5) {
     labs(x='Pearson Correlation', title='Distribution of Gene-wise Pearson Correlation',
          subtitle=sprintf('Mean = %.3f; SD = %.3f', mean(gene_cor$Pearson_cor, na.rm=T), sd(gene_cor$Pearson_cor, na.rm=T)))
   
-  corgene <- rownames(gene_cor)[gene_cor$Pearson_cor > cutoff]
+  corgene <- rownames(gene_cor)[gene_cor$Pearson_cor > cutoff & !(is.na(gene_cor$Pearson_cor))]
   cat(sprintf('Selected %d genes (correlation > %.2f) \n', length(corgene), cutoff))
   
   corsample <- cor(t(rnaseq[, corgene]), t(proteome[, corgene]))
@@ -225,7 +225,7 @@ align_omics <- function(rnaseq, proteome, cutoff = 0.5) {
       labs(x='Pearson Correlation', title='Distribution of Gene-wise Pearson Correlation',
            subtitle=sprintf('Mean = %.3f; SD = %.3f', mean(gene_cor$Pearson_cor, na.rm=T), sd(gene_cor$Pearson_cor, na.rm=T)))
     
-    corgene <- rownames(gene_cor)[gene_cor$Pearson_cor > cutoff]
+    corgene <- rownames(gene_cor)[gene_cor$Pearson_cor > cutoff & !(is.na(gene_cor$Pearson_cor))]
     cat(sprintf('Selected %d genes (correlation > %.2f) \n', length(corgene), cutoff))
     
     corsample <- cor(t(rnaseq[, corgene]), t(proteome[, corgene]))
