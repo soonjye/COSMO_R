@@ -54,11 +54,13 @@ nonmatch     <- which(matcher$mismatch_status == 1)
 
 
 ########## Attribute Prediction ##########
-predict_outputs <- predict_gender(clinical, chr_annotate, rnaseq, proteome, matcher)
+rna_sex <- partitionSexMatrix(rnaseq, chr_annotate)
+pro_sex <- partitionSexMatrix(proteome, chr_annotate)
+predict_outputs <- predict_gender(clinical, rna_sex, pro_sex, matcher)
 
 traincli <- predict_outputs$prediction_2
 cli_suspect <- which(traincli$misannotate == 1)
-
+cat(length(cli_suspect), 'is suspected to have gender mislabeled! \n\n')
 
 
 

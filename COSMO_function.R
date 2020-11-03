@@ -22,10 +22,10 @@ prpc_omics <- function(omics, chr_annotate, impute_missing = FALSE) {
   cat('Preprocessing data matrix, dimension =', dim(omics), '\n')
   
   ## filter variables with no variance (all observation has the same or missing value)
-  rowvar <- apply(omics, 1, function(x) var(x, na.rm=T))
-  cat(' ', sum(rowvar == 0 | is.na(rowvar)), 'genes with no variance >> Removed... ')
-  omics <- omics[rowvar != 0 & !(is.na(rowvar)), ]
-  cat('Remaining =', nrow(omics), '\n')
+  #rowvar <- apply(omics, 1, function(x) var(x, na.rm=T))
+  #cat(' ', sum(rowvar == 0 | is.na(rowvar)), 'genes with no variance >> Removed... ')
+  #omics <- omics[rowvar != 0 & !(is.na(rowvar)), ]
+  #cat('Remaining =', nrow(omics), '\n')
   
   ## partition sex genes and autosomal genes
   sexgenes <- getSexGenes(chr_annotate)
@@ -34,19 +34,31 @@ prpc_omics <- function(omics, chr_annotate, impute_missing = FALSE) {
   
   
   #### For sex genes, replace missing values with 0
-  cat('    Sex genes = ', nrow(omics_sex), '\n')
-  cat('      Replace missing value with 0 ... Completed \n')
+  cat('  Sex genes = ', nrow(omics_sex), '\n')
+  
+  rowvar <- apply(omics_sex, 1, function(x) var(x, na.rm=T))
+  cat(sprintf('      %d genes with no variance >> Removed... \n', sum(rowvar == 0 | is.na(rowvar))))
+  omics_sex <- omics_sex[rowvar != 0 & !(is.na(rowvar)), ]
+  
+  rowmiss <- apply(omics_sex, 1, function(x) sum(is.na(x)))
+  cat(sprintf('      %d genes with missing value >> Replaced with 0 \n', sum(rowmiss > 0)))
   omics_sex[is.na(omics_sex)] <- 0
+  cat('    Remaining sex gene =', nrow(omics_sex), '\n\n')
+  
   
   #### For autosomal genes, filter variables with missing values in > 50% of sample size
-  cat('    Autosomal gene =', nrow(omics_atsm), '\n')
+  cat('  Autosomal gene =', nrow(omics_atsm), '\n')
+  
+  rowvar <- apply(omics_atsm, 1, function(x) var(x, na.rm=T))
+  cat(sprintf('      %d genes with no variance >> Removed... \n', sum(rowvar == 0 | is.na(rowvar))))
+  omics_atsm <- omics_atsm[rowvar != 0 & !(is.na(rowvar)), ]
   
   rowmiss <- apply(omics_atsm, 1, function(x) sum(is.na(x)))
-  cat(sprintf('      %d autosomal genes with missing value in > 50%% (%.1f) of samples >> Removed... \n', sum(rowmiss > ncol(omics_atsm)/2), ncol(omics_atsm)/2))
+  cat(sprintf('      %d genes with missing value in > 50%% (%.1f) of samples >> Removed... \n', sum(rowmiss > ncol(omics_atsm)/2), ncol(omics_atsm)/2))
   omics_atsm <- omics_atsm[rowmiss <= ncol(omics_atsm)/2, ]
   
   rowmiss <- apply(omics_atsm, 1, function(x) sum(is.na(x)))
-  cat(sprintf('      %d autosomal genes with missing value in <= 50%% (%.1f) of samples >> ', sum(rowmiss <= ncol(omics_atsm)/2 & rowmiss > 0), ncol(omics_atsm)/2))
+  cat(sprintf('      %d genes with missing value in <= 50%% (%.1f) of samples >> ', sum(rowmiss <= ncol(omics_atsm)/2 & rowmiss > 0), ncol(omics_atsm)/2))
   
   #### For remaining autosomal genes, if impute_missing == TRUE, then impute missing values
   if (impute_missing == TRUE) {
@@ -63,7 +75,7 @@ prpc_omics <- function(omics, chr_annotate, impute_missing = FALSE) {
     cat('Removed... \n')
     omics_atsm <- omics_atsm[rowmiss == 0, ]
   }
-  cat('    Autosomal genes =', nrow(omics_atsm), '\n')
+  cat('    Remaining autosomal genes =', nrow(omics_atsm), '\n')
   
   
   preprocessed <- rbind(omics_atsm, omics_sex)
