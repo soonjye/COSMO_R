@@ -439,7 +439,7 @@ Assuming sex prediction is not feasible and unable to determine the swapping pai
 
 
 # <a name="cosmo_cite"></a>Citing COSMO
-Please cite our paper when using COSMO: TBD
+Yoo, S., Shi, Z., Wen, B., Kho, S., Pan, R., Feng, H., ... & Zhang, B. (2021). A community effort to identify and correct mislabeled samples in proteogenomic studies. Patterns, 2(5), 100245.
 
 Dataset source: 
 Chick, J. M., Munger, S. C., Simecek, P., Huttlin, E. L., Choi, K., Gatti, D. M., ... & Gygi, S. P. (2016). Defining the consequences of genetic variation on a proteome-wide scale. Nature, 534(7608), 500-505.
